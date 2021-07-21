@@ -1,17 +1,22 @@
 ﻿
 using Datos.Modelo;
+using System;
 using System.Linq;
 
 namespace LNegocio
 {
     public class Autenticacion
     {
+        
+
         public static autenticacionRes fn(autenticacionReq param)
         {
-
+            autenticacionRes result = new autenticacionRes();
+            
+            try { 
             SitemaZContext bd = new SitemaZContext();
             param.contrasenia = Funciones.codificarB64(param.contrasenia);
-            autenticacionRes result = new autenticacionRes(); 
+            
             
 
             var us = (from x in bd.Usuario
@@ -22,7 +27,7 @@ namespace LNegocio
                                                         idPerfil = x.IdPerfil.Value,
                                                         nombres = x.Nombres,
                                                         idUsuario = x.IdUsuario,
-                                                        IdRazonSocial = x.IdRazonSocialNavigation.IdRazonSocial
+                                                        idSede = x.IdSedeNavigation.IdSede
                           } )
                           ).SingleOrDefault();
 
@@ -33,7 +38,7 @@ namespace LNegocio
             else {
                 result.autorizado = false;
             }
-
+            }catch(Exception e) { result.nombres = e.Message; }
             return result;
         }
     }
@@ -49,7 +54,7 @@ namespace LNegocio
         public bool autorizado { get; set; }
         public int idPerfil { get; set; }
         public int idUsuario { get; set; }
-        public int IdRazonSocial { get; set; }
+        public int idSede { get; set; }
 
         public string nombres { get; set; }
         public string apPaterno { get; set; }

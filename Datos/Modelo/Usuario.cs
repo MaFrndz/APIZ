@@ -5,14 +5,9 @@ namespace Datos.Modelo
 {
     public partial class Usuario
     {
-        public Usuario()
-        {
-            Producto = new HashSet<Producto>();
-        }
-
         public int IdUsuario { get; set; }
         public int? IdPerfil { get; set; }
-        public int? IdRazonSocial { get; set; }
+        public int? IdSede { get; set; }
         public string UsuarioSistema { get; set; }
         public string Contrasenia { get; set; }
         public string Nombres { get; set; }
@@ -21,7 +16,6 @@ namespace Datos.Modelo
         public string Correo { get; set; }
 
         public virtual Perfil IdPerfilNavigation { get; set; }
-        public virtual RazonSocial IdRazonSocialNavigation { get; set; }
-        public virtual ICollection<Producto> Producto { get; set; }
+        public virtual Sede IdSedeNavigation { get; set; }
     }
 }

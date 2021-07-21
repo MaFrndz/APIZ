@@ -21,12 +21,16 @@ namespace APIZ.Controllers
         [Route("autenticacion")]
         public JsonResult listaUsuarios( [FromBody] autenticacionReq param)
         {
-            
-
-             var resul = Autenticacion.fn(param);
+            autenticacionRes result = new autenticacionRes();
+            utiles u = new utiles();
+            try { 
+             result = Autenticacion.fn(param);
+            }
+            catch(Exception e) { u.GenLog(e.Message);  }
             //string t = DateTime.Now.Ticks.ToString();
             //  DateTime t1 = new DateTime(Convert.ToInt64(t));
-            return Json(resul);
+            
+            return Json(result);
         }
 
 

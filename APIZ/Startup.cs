@@ -31,7 +31,7 @@ namespace APIZ
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors(options =>
-            {
+            {               
                 options.AddPolicy(MyAllowSpecificOrigins,
                 builder =>
                 {

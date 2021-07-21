@@ -1,6 +1,6 @@
 ﻿
-using Microsoft.AspNetCore.Mvc;
 using LNegocio.Inico;
+using Microsoft.AspNetCore.Mvc;
 
 namespace APIZ.Controllers
 {

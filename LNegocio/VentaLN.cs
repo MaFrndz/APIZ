@@ -1,15 +1,16 @@
 ﻿using Datos.Modelo;
 using System.Collections.Generic;
 using System.Linq;
-using System.Collections.Generic;
 
 namespace LNegocio
 {
     public class VentaLN
     {
+        SitemaZContext bd = new SitemaZContext();
+
         public  List<ProductoResult> lsitaProductos  (paramsListaMenu param) {
+
             
-            SitemaZContext bd = new SitemaZContext();
             //string nombreProduto = "";
             //if (param.nombreProducto != "")
             //{
@@ -18,8 +19,9 @@ namespace LNegocio
             
             
             var result = (from x in bd.Producto
-                        where x.Nombre.Contains( param.nombreProducto) &&   x.Precio < param.costoMaximo  && x.IdRazonSocial == param.idRazonSocial
-                          select (new ProductoResult {  IdProducto = x.IdProducto, Nombre=x.Nombre, Precio=x.Precio.Value,SimboloMoneda=x.IdMonedaNavigation.Simbolo  , Stock=x.Stock.Value, UnidadMedida=x.IdUnidadMedidaNavigation.Nombre})
+                        where x.Nombre.Contains( param.nombreProducto) &&   x.UltimoPrecio < param.costoMaximo  
+                          select (new ProductoResult {  IdProducto = x.IdProducto, Nombre=x.Nombre, Precio=x.UltimoPrecio.Value,SimboloMoneda=x.IdMonedaNavigation.Simbolo,
+                              Stock= 0, UnidadMedida=x.IdUnidadMedidaNavigation.Nombre})
                           ).Skip(param.tPag * param.nPag ).Take(param.tPag).ToList();
             
            
