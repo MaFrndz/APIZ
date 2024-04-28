@@ -83,128 +83,53 @@ namespace LNegocio
             return result;
         }
 
-        public int listarProductoCont(productoBuscar param)
-        {           
+		//public int listarProductoCont(productoBuscar param)
+		//{           
 
-            int result = 0;
-            if (param.idCategoriaProducto == 0)
-            {
-                result = (from x in bd.Producto
-                          where x.Nombre.Contains(param.nomProducto != "" ? param.nomProducto : "")
-                          select x).Count();
-            }
-            else
-            {
-                result = (from x in bd.Producto
-                          where x.Nombre.Contains(param.nomProducto != "" ? param.nomProducto : "") && x.IdCategoriaProducto == param.idCategoriaProducto
-                          select x).Count();
-            }
-            
-            //var result2 = bd.Producto.Where(x => x.Nombre == "Lechuga").Where(x => x.Stock ==1 ).ToList();
-             //var xx =  bd.Producto.All(x => x.UltimoPrecio.Value == 1);
-            return result;
-        }
-        public List<producto> listarProducto(productoBuscar param)
-        {
+		//    int result = 0;
+		//    if (param.idCategoriaProducto == 0)
+		//    {
+		//        result = (from x in bd.Producto
+		//                  where x.Nombre.Contains(param.nomProducto != "" ? param.nomProducto : "")
+		//                  select x).Count();
+		//    }
+		//    else
+		//    {
+		//        result = (from x in bd.Producto
+		//                  where x.Nombre.Contains(param.nomProducto != "" ? param.nomProducto : "") && x.IdCategoriaProducto == param.idCategoriaProducto
+		//                  select x).Count();
+		//    }
+		//    return result;
+		//}
+		public List<producto> listarProducto()
+		{
+			IQueryable<Producto> query = bd.Producto;
 
-            if (param.numPag > 0) { param.numPag = param.numPag - 1; }
-            
-            List<producto> result = new List<producto>();
-            if(param.ordeby == false) {
+			
 
-                if (param.idCategoriaProducto == 0)
-                {
-                    result = (from x in bd.Producto
-                              where x.Nombre.Contains(param.nomProducto != "" ? param.nomProducto : "") orderby x.Stock ascending
-                              select (new producto
-                              {
-                                  idProducto = x.IdProducto,
-                                  nomProducto = x.Nombre,
-                                  precioUnidad = x.UltimoPrecio.Value,
-                                  stock = x.Stock.Value,//verStockProducto(x.IdProducto, param.idSede) - verConsumoProducto(x.IdProducto, param.idSede),
-                                  CostoCompras = x.CostoCompras.Value, //x.CostoCompras.Value,
-                                  CostoGasto = x.CostoGasto.Value,
-                                  simboloMoneda = x.IdMonedaNavigation.Simbolo,
-                                  NombreCategoria = x.IdCategoriaProductoNavigation.Nombre,
-                                  idCategoriaProducto = x.IdCategoriaProducto.Value,
-                                  IdUnidadMedida = x.IdUnidadMedida.Value,
-                                  idMoneda = x.IdMoneda.Value,
-                                  nombreUnidadMedida = x.IdUnidadMedidaNavigation.Nombre
-                              })).Skip(param.numPag * param.tamPag).Take(param.tamPag).ToList();
-                }
+			List<producto> result = query
+				.Select(x => new producto
+				{
+					idProducto = x.IdProducto,
+					nomProducto = x.Nombre,
+					precioUnidad = x.UltimoPrecio.Value,
+					stock = x.Stock.Value,
+					CostoCompras = x.CostoCompras.Value,
+					CostoGasto = x.CostoGasto.Value,
+					simboloMoneda = x.IdMonedaNavigation.Simbolo,
+					NombreCategoria = x.IdCategoriaProductoNavigation.Nombre,
+					idCategoriaProducto = x.IdCategoriaProducto.Value,
+					IdUnidadMedida = x.IdUnidadMedida.Value,
+					idMoneda = x.IdMoneda.Value,
+					nombreUnidadMedida = x.IdUnidadMedidaNavigation.Nombre
+				})
+				.ToList();
 
-                else
-                {
-                    result = (from x in bd.Producto
-                              where x.Nombre.Contains(param.nomProducto != "" ? param.nomProducto : "") && x.IdCategoriaProducto == param.idCategoriaProducto
-                              orderby x.Stock ascending
-                              select (new producto
-                              {
-                                  idProducto = x.IdProducto,
-                                  nomProducto = x.Nombre,
-                                  precioUnidad = x.UltimoPrecio.Value,
-                                  stock = x.Stock.Value,//verStockProducto(x.IdProducto, param.idSede) - verConsumoProducto(x.IdProducto, param.idSede),
-                                  CostoCompras = x.CostoCompras.Value,
-                                  CostoGasto = x.CostoGasto.Value,
-                                  simboloMoneda = x.IdMonedaNavigation.Simbolo,
-                                  NombreCategoria = x.IdCategoriaProductoNavigation.Nombre,
-                                  idCategoriaProducto = x.IdCategoriaProducto.Value,
-                                  IdUnidadMedida = x.IdUnidadMedida.Value,
-                                  idMoneda = x.IdMoneda.Value,
-                                  nombreUnidadMedida = x.IdUnidadMedidaNavigation.Nombre
-                              })).Skip(param.numPag * param.tamPag).Take(param.tamPag).ToList();
-                }
-            }
+			return result;
+		}
 
-            if(param.ordeby == true) {
-                if (param.idCategoriaProducto == 0)
-                {
-                    result = (from x in bd.Producto
-                              where x.Nombre.Contains(param.nomProducto != "" ? param.nomProducto : "")
-                              orderby x.Stock descending
-                              select (new producto
-                              {
-                                  idProducto = x.IdProducto,
-                                  nomProducto = x.Nombre,
-                                  precioUnidad = x.UltimoPrecio.Value,
-                                  stock = x.Stock.Value, //verStockProducto(x.IdProducto, param.idSede) - verConsumoProducto(x.IdProducto, param.idSede),
-                                  CostoCompras = x.CostoCompras.Value,
-                                  CostoGasto = x.CostoGasto.Value,
-                                  simboloMoneda = x.IdMonedaNavigation.Simbolo,
-                                  NombreCategoria = x.IdCategoriaProductoNavigation.Nombre,
-                                  idCategoriaProducto = x.IdCategoriaProducto.Value,
-                                  IdUnidadMedida = x.IdUnidadMedida.Value,
-                                  idMoneda = x.IdMoneda.Value,
-                                  nombreUnidadMedida = x.IdUnidadMedidaNavigation.Nombre
-                              })).Skip(param.numPag * param.tamPag).Take(param.tamPag).ToList();
-                }
-                else
-                {
-                    result = (from x in bd.Producto
-                              where x.Nombre.Contains(param.nomProducto != "" ? param.nomProducto : "") && x.IdCategoriaProducto == param.idCategoriaProducto
-                              orderby x.Stock descending
-                              select (new producto
-                              {
-                                  idProducto = x.IdProducto,
-                                  nomProducto = x.Nombre,
-                                  precioUnidad = x.UltimoPrecio.Value,
-                                  stock = x.Stock.Value, //verStockProducto(x.IdProducto, param.idSede) - verConsumoProducto(x.IdProducto, param.idSede),
-                                  CostoCompras = x.CostoCompras.Value,
-                                  CostoGasto = x.CostoGasto.Value,
-                                  simboloMoneda = x.IdMonedaNavigation.Simbolo,
-                                  NombreCategoria = x.IdCategoriaProductoNavigation.Nombre,
-                                  idCategoriaProducto = x.IdCategoriaProducto.Value,
-                                  IdUnidadMedida = x.IdUnidadMedida.Value,
-                                  idMoneda = x.IdMoneda.Value,
-                                  nombreUnidadMedida = x.IdUnidadMedidaNavigation.Nombre
-                              })).Skip(param.numPag * param.tamPag).Take(param.tamPag).ToList();
-                }
-            }
 
-            return result;
-        }
-
-        public List<categoriaProducto> listaCategoriaProducto()
+		public List<categoriaProducto> listaCategoriaProducto()
         {
             var result = (from x in bd.CategoriaProducto
                           select (new categoriaProducto { idCategoriaProducto = x.IdCategoriaProducto, Nombre = x.Nombre })
@@ -358,90 +283,7 @@ namespace LNegocio
         }
         #endregion
 
-        #region produccion
-        public List<consumo> listaConsumo()
-        {
-            var result = (from x in bd.Consumo orderby x.IdConsumo descending
-                          select (new consumo { IdConsumo = x.IdConsumo,
-                          Fecha = x.Fecha.Value.ToString("dd/MM/yyyy"), Nombre = x.Nombre, FechaDT = x.Fecha.Value })).ToList();
-
-            foreach(var item in result)
-            {
-                var detalleConsumo = (from x in bd.DetalleConsumo where x.IdConsumo.Value == item.IdConsumo select x).ToList();
-                decimal cant = 0;
-                
-                for(int i=0; i< detalleConsumo.Count; i++)
-                {
-                    var prodd = (from x in bd.Producto where x.IdProducto == detalleConsumo[i].IdProducto.Value select x).SingleOrDefault();
-                    cant += Math.Round( detalleConsumo[i].Cantidad.Value * prodd.UltimoPrecio.Value ,2);
-                    item.costoTotal = cant.ToString();
-                }
-                if (item.costoTotal == null) item.costoTotal = "S/. 0";
-            }
-
-            return result;
-        }
-        public int insertarConsumo(consumo param)
-        {
-            int idgen = 0;
-            if (param.IdConsumo == 0) {
-                Consumo nuevo = new Consumo();
-                nuevo.Nombre = param.Nombre;
-                nuevo.Fecha = param.FechaDT;
-                bd.Consumo.Add(nuevo);
-                bd.SaveChanges();
-                idgen = nuevo.IdConsumo;
-            }
-            else
-            {
-                var obj = (from x in bd.Consumo where x.IdConsumo == param.IdConsumo select x).SingleOrDefault();
-                obj.Nombre = param.Nombre;
-                bd.SaveChanges();
-                idgen = param.IdConsumo;
-            }
-            bd.Dispose();
-            return idgen;
-        }
-
-        public List<detalleConsumo> obtenerDetalleConsumo( consumo param )
-        {
-            var result = (from x in bd.DetalleConsumo where x.IdConsumo == param.IdConsumo orderby x.IdDetalleConsumo descending
-                          select( new detalleConsumo { cantidad = x.Cantidad.Value , producto = x.IdProductoNavigation.Nombre,
-                          idProducto = x.IdProducto.Value })).ToList();
-
-            foreach (var item in result)
-            {
-                var prodd = (from x in bd.Producto where x.IdProducto == item.idProducto select x).SingleOrDefault();
-                item.costoTotal = Math.Round( item.cantidad * prodd.UltimoPrecio.Value,2).ToString();
-            }
-
-            return result;
-        }
-
-        public bool insertarDetalleConsumo( detalleConsumo param )
-        {
-            bool result = false;
-
-            try { 
-                DetalleConsumo nuevo = new DetalleConsumo();
-                nuevo.Cantidad = param.cantidad;
-                nuevo.IdProducto = param.idProducto;
-                nuevo.IdConsumo = param.idConsumo;
-                // restar stock
-                var prod = (from x in bd.Producto where x.IdProducto == param.idProducto select x).SingleOrDefault();
-                prod.Stock =  prod.Stock - param.cantidad;
-                // hacer calculo en monto gastado 
-
-                bd.DetalleConsumo.Add(nuevo);
-                bd.SaveChanges();
-                
-                result = true;
-
-            } catch (Exception e) { throw e;  }
-
-            return result;
-        }
-        #endregion
+        
     }
 
     //produccion
@@ -452,17 +294,17 @@ namespace LNegocio
         public int cantidad { get; set; }
 
         public string producto { get; set; }
-        public string costoTotal { get; set; }
+        //public string costoTotal { get; set; }
     }
 
     public class consumo
     {
         public int IdConsumo { get; set; }
-        public string Fecha { get; set; }
-        public DateTime FechaDT { get; set; }
+        public DateTime Fecha { get; set; }
         public string Nombre { get; set; }
-        public string costoTotal { get; set; }
-    }
+        public string Sede { get;set; }
+		public int idSede { get; set; }
+	}
 
 
     // almacen
@@ -519,8 +361,8 @@ namespace LNegocio
         public bool ordeby { get; set; }
         public int idSede { get; set; }
 
-        public int numPag { get; set; }
-        public int tamPag { get; set; }
+        //public int numPag { get; set; }
+        //public int tamPag { get; set; }
     }
 
     public class unidaMedida

@@ -38,6 +38,7 @@ namespace Datos.Modelo
         {
             if (!optionsBuilder.IsConfigured)
             {
+
                 optionsBuilder.UseSqlServer(new conexion().getConexionString());
             }
         }
@@ -215,9 +216,15 @@ namespace Datos.Modelo
 
                 entity.Property(e => e.IdMenu).HasColumnName("idMenu");
 
+                entity.Property(e => e.Icon)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.NomMenu)
                     .HasMaxLength(50)
                     .IsUnicode(false);
+
+                entity.Property(e => e.Orden).HasColumnName("orden");
             });
 
             modelBuilder.Entity<MenuPerfil>(entity =>

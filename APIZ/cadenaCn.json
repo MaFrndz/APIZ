@@ -1,1 +1,1 @@
-Data Source=MIGUELPC; Initial Catalog=SitemaZ; User ID=sa;Password=.
+Data Source=MIGUELPC\SQLEXPRESS; Initial Catalog=SitemaZ; User ID=sa;Password=.

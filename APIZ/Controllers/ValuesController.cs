@@ -23,9 +23,9 @@ namespace APIZ.Controllers
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public ActionResult<Int32> Get(int id)
         {
-            return "value";
+            return id;
         }
 
         // POST api/values

@@ -10,14 +10,20 @@ namespace LNegocio.Inico
     {
         public static List< obtenerMenuPorUsuarioRes> fn (obtenerMenuPorUsuarioReq param)
         {
-            SitemaZContext bd = new SitemaZContext();
+			SitemaZContext bd = new SitemaZContext();
             
             var result = (from x in bd.MenuPerfil
                           where (x.IdPerfil == param.idPerfil)
-                          select (new obtenerMenuPorUsuarioRes { menu = x.IdMenuNavigation.NomMenu ,visible = x.Visible.Value} )
-                            ).ToList();
+                          select (new obtenerMenuPorUsuarioRes { 
+                              menu = x.IdMenuNavigation.NomMenu ,
+                              visible = x.Visible.Value, 
+                              icon=x.IdMenuNavigation.Icon,
+                              order = x.IdMenuNavigation.Orden.Value
+                          } ))
+						  .OrderBy(menu => menu.order)
+						  .ToList();
 
-            return result;
+            return result; 
         }
     }
 
@@ -30,5 +36,7 @@ namespace LNegocio.Inico
     {
         public string menu { get; set; }
         public bool visible { get; set; }
-    }
+        public string icon { get;set; }
+		public int order { get; set; }
+	}
 }
