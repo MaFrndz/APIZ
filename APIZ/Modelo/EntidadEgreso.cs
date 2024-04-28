@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Datos.Modelo
+namespace APIZ.Modelo
 {
     public partial class EntidadEgreso
     {
-        public EntidadEgreso()
-        {
-            Egreso = new HashSet<Egreso>();
-        }
-
         public int IdEntidadEgreso { get; set; }
         public string Nombres { get; set; }
         public string ApPaterno { get; set; }
@@ -20,7 +15,5 @@ namespace Datos.Modelo
         public int? DiaPagoPeriodico { get; set; }
         public decimal? MontoPagoPeriodico { get; set; }
         public bool? Borrado { get; set; }
-
-        public virtual ICollection<Egreso> Egreso { get; set; }
     }
 }

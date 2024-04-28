@@ -12,8 +12,7 @@ namespace LNegocio
 			try
 			{
 				var item = bd.EntidadEgreso.SingleOrDefault(x => x.IdEntidadEgreso == param.IdEntidadEgreso);
-
-				bd.EntidadEgreso.Remove(item);
+				item.Borrado = true;
 				bd.SaveChanges();
 				bd.Dispose();
 				return true;
@@ -39,6 +38,7 @@ namespace LNegocio
 					nuevo.PagoPeriodico = param.PagoPeriodico;
 					nuevo.DiaPagoPeriodico = param.DiaPagoPeriodico;
 					nuevo.MontoPagoPeriodico = param.MontoPagoPeriodico;
+					nuevo.Borrado = false;
 					bd.EntidadEgreso.Add(nuevo);
 					bd.SaveChanges();
 					bd.Dispose();
@@ -55,6 +55,7 @@ namespace LNegocio
 					ent.PagoPeriodico = param.PagoPeriodico;
 					ent.DiaPagoPeriodico = param.DiaPagoPeriodico;
 					ent.MontoPagoPeriodico = param.MontoPagoPeriodico;
+					ent.Borrado = false;
 					bd.SaveChanges();
 					bd.Dispose();
 				}
@@ -74,60 +75,41 @@ namespace LNegocio
 			List<egresoFront> result = new List<egresoFront>();
 
 			result = (from x in bd.Egreso
-					  orderby x.Fecha descending, x.IdEgreso descending
+					  where x.Borrado == false
+					  orderby x.IdEgreso descending
 					  select (new egresoFront
 					  {
 						  idEgreso = x.IdEgreso,
-						  nombreEntEgreso = x.IdEntidadEgresoNavigation.Nombres,
-						  apPaterno = x.IdEntidadEgresoNavigation.ApPaterno,
-						  apMaterno = x.IdEntidadEgresoNavigation.ApMaterno,
+						  idEntidadEgreso = x.IdEntidadEgresoNavigation.IdEntidadEgreso,
+						  nombresEntEgreso = x.IdEntidadEgresoNavigation.Nombres + " " +
+						  x.IdEntidadEgresoNavigation.ApPaterno + " " +
+						  x.IdEntidadEgresoNavigation.ApMaterno,
 						  monto = x.Monto.Value,
 						  descripcion = x.Descripcion,
-						  fecha = x.Fecha.Value,
+						  fecha = x.Fecha,
 						  evidencia = x.EvidenciaEgreso.B64,
 						  celular = x.IdEntidadEgresoNavigation.Celular
 					  })).ToList();
 			return result;
 		}
 
-		public resultEgresosContar listarEgresosContar(paramsBusquedaEgresos param)
+		public bool eliminarEgreso(egresoFront param)
 		{
-			resultEgresosContar result = new resultEgresosContar();
-
-			if (param.montoHasta == null) { param.montoHasta = 9999999; }
-			if (param.montoDesde == null) { param.montoDesde = 0; }
-
-			if (param.idEntEgre != 0)
+			try
 			{
-				result.totalRegitros = (from x in bd.Egreso
-										where x.Monto >= param.montoDesde && x.Monto <= param.montoHasta && x.IdEntidadEgreso == param.idEntEgre
-										&& x.Fecha.Value >= param.fDesde && x.Fecha.Value <= param.fHasta
-										select x
-						  ).Count();
+				var item = bd.Egreso.SingleOrDefault(x => x.IdEgreso == param.idEgreso);
+				item.Borrado = true;
+				bd.SaveChanges();
+				bd.Dispose();
 
-				result.TotalMonto += (from x in bd.Egreso
-									  where x.Monto >= param.montoDesde && x.Monto <= param.montoHasta && x.IdEntidadEgreso == param.idEntEgre
-									  && x.Fecha.Value >= param.fDesde && x.Fecha.Value <= param.fHasta
-									  select x
-						  ).Sum(x => x.Monto.Value);
+				return true;
 			}
-			else
+			catch (Exception)
 			{
-				result.totalRegitros = (from x in bd.Egreso
-										where x.Monto >= param.montoDesde && x.Monto <= param.montoHasta
-										&& x.Fecha.Value >= param.fDesde && x.Fecha.Value <= param.fHasta
-										orderby x.Fecha descending
-										select x).Count();
-
-				result.TotalMonto = (from x in bd.Egreso
-									 where x.Monto >= param.montoDesde && x.Monto <= param.montoHasta
-									 && x.Fecha.Value >= param.fDesde && x.Fecha.Value <= param.fHasta
-									 select x
-						 ).Sum(x => x.Monto.Value);
+				return false;
 			}
-
-			return result;
 		}
+		
 
 		public string obtenerEvidencia(egresoFront param)
 		{
@@ -143,6 +125,7 @@ namespace LNegocio
 		{
 
 			var result = (from x in bd.EntidadEgreso
+						  where x.Borrado == false
 						  orderby x.DiaPagoPeriodico descending
 						  select x).ToList();
 
@@ -151,24 +134,38 @@ namespace LNegocio
 			return result;
 		}
 
-		public bool insertarEgreso(insertarEgreso param)
+		public bool insertarEgreso(InsertarEgreso param)
 		{
-			bool result = false;
-			Egreso eg = new Egreso();
-			eg.IdUsuario = param.idUsuario;
-			eg.IdEntidadEgreso = param.idEntidadEgreso;
-			eg.Fecha = param.fehca;
-			eg.Monto = param.monto;
-			eg.Descripcion = param.descripcion;
-			bd.Egreso.Add(eg);
-			//
-			EvidenciaEgreso ev = new EvidenciaEgreso();
-			ev.B64 = param.evidenciaB64;
-			ev.IdEgreso = eg.IdEgreso;
-			bd.Add(ev);
-			bd.SaveChanges();
-			bd.Dispose();
-			return result;
+			try {
+				if(param.idEgreso == 0)
+				{
+					Egreso eg = new Egreso();
+					eg.IdUsuario = param.idUsuario;
+					eg.IdEntidadEgreso = param.idEntidadEgreso;
+					eg.Fecha = param.fecha;
+					eg.Monto = param.monto;
+					eg.Descripcion = param.descripcion;
+					eg.Borrado = false;
+					bd.Egreso.Add(eg);
+				}
+				else
+				{
+					var ent = (from x in bd.Egreso where x.IdEgreso == param.idEgreso select x).SingleOrDefault();
+
+					ent.IdUsuario = param.idUsuario;
+					ent.IdEntidadEgreso = param.idEntidadEgreso;
+					ent.Fecha = param.fecha;
+					ent.Monto = param.monto;
+					ent.Descripcion = param.descripcion;
+					bd.Update(ent);
+				}
+				
+				bd.SaveChanges();
+				bd.Dispose();
+
+				return true;
+			}
+			catch (Exception) { return false; }
 		}
 	}
 	public class paramsBusquedaEgresos
@@ -184,24 +181,25 @@ namespace LNegocio
 	}
 
 
-	public class insertarEgreso
+	public class InsertarEgreso
 	{
+		public int idEgreso { get; set; }
 		public int idEntidadEgreso { get; set; }
 		public int idUsuario { get; set; }
-		public DateTime fehca { get; set; }
+		public string fecha { get; set; }
 		public decimal monto { get; set; }
 		public string descripcion { get; set; }
-		public string evidenciaB64 { get; set; }
+
 	}
+
 	public class egresoFront
 	{
 		public int idEgreso { get; set; }
-		public string nombreEntEgreso { get; set; }
-		public string apPaterno { get; set; }
-		public string apMaterno { get; set; }
+		public int idEntidadEgreso { get; set; }
+		public string nombresEntEgreso { get; set; }
 		public decimal monto { get; set; }
 		public string descripcion { get; set; }
-		public DateTime fecha { get; set; }
+		public string fecha { get; set; }
 		public string evidencia { get; set; }
 		public string celular { get; set; }
 	}

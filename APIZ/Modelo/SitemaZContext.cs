@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace Datos.Modelo
+namespace APIZ.Modelo
 {
     public partial class SitemaZContext : DbContext
     {
@@ -141,21 +141,13 @@ namespace Datos.Modelo
                     .HasMaxLength(500)
                     .IsUnicode(false);
 
-                entity.Property(e => e.Fecha)
-                    .HasMaxLength(50)
-                    .IsUnicode(false);
+                entity.Property(e => e.Fecha).HasColumnType("date");
 
                 entity.Property(e => e.IdEntidadEgreso).HasColumnName("idEntidadEgreso");
 
                 entity.Property(e => e.IdUsuario).HasColumnName("idUsuario");
 
                 entity.Property(e => e.Monto).HasColumnType("decimal(10, 2)");
-
-                entity.HasOne(d => d.IdEntidadEgresoNavigation)
-                    .WithMany(p => p.Egreso)
-                    .HasForeignKey(d => d.IdEntidadEgreso)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Egreso_EntidadEgreso");
             });
 
             modelBuilder.Entity<EntidadEgreso>(entity =>

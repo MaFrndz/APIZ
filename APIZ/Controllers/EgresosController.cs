@@ -45,15 +45,16 @@ namespace APIZ.Controllers
             var result = new ContabilidadLN().listarEgresos();
             return Json(result);
         }
-        //[HttpPost]
-        //[Route("listarEgresosContar")]
-        //public JsonResult listarEgresosContar(paramsBusquedaEgresos param)
-        //{
-        //    var result = new ContabilidadLN().listarEgresosContar(param);
-        //    return Json(result);
-        //}
 
-        [HttpPost]
+		[HttpPost]
+		[Route("eliminarEgreso")]
+		public JsonResult eliminarEgreso(egresoFront param)
+		{
+			var result = new ContabilidadLN().eliminarEgreso(param);
+			return Json(result);
+		}
+
+		[HttpPost]
         [Route("obtenerEvidencia")]
         public JsonResult obtenerEvidencia(egresoFront param)
         {
@@ -63,7 +64,7 @@ namespace APIZ.Controllers
                     
         [HttpPost]
         [Route("insertarEgreso")]
-        public JsonResult insertarEgreso(insertarEgreso param)
+        public JsonResult insertarEgreso(InsertarEgreso param)
         {
             var result = new ContabilidadLN().insertarEgreso(param);
             return Json(result);
