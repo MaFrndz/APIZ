@@ -9,6 +9,7 @@ namespace Datos.Modelo
         {
             CompraProducto = new HashSet<CompraProducto>();
             DetalleConsumo = new HashSet<DetalleConsumo>();
+            Ingreso = new HashSet<Ingreso>();
         }
 
         public int IdProducto { get; set; }
@@ -20,11 +21,14 @@ namespace Datos.Modelo
         public int? Stock { get; set; }
         public decimal? CostoCompras { get; set; }
         public decimal? CostoGasto { get; set; }
+        public bool? ProductoCompra { get; set; }
+        public bool? ProductoVenta { get; set; }
 
         public virtual CategoriaProducto IdCategoriaProductoNavigation { get; set; }
         public virtual Moneda IdMonedaNavigation { get; set; }
         public virtual UnidadMedida IdUnidadMedidaNavigation { get; set; }
         public virtual ICollection<CompraProducto> CompraProducto { get; set; }
         public virtual ICollection<DetalleConsumo> DetalleConsumo { get; set; }
+        public virtual ICollection<Ingreso> Ingreso { get; set; }
     }
 }

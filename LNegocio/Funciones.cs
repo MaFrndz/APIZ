@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace LNegocio
+﻿namespace LNegocio
 {
-    public class Funciones
+	public class Funciones
     {
         public static string codificarB64(string val)
         {

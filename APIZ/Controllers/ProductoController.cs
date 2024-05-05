@@ -28,25 +28,24 @@ namespace APIZ.Controllers
             return Json(result);
         }
         [HttpGet]
-        [Route("listarProductos")]
-        public JsonResult listarProductos()
+        [Route("listarProductosCompra")]
+        public JsonResult listarProductosCompra()
         {
             //var resul = obtenerMenuPorUsuario.fn(null);
-            var result = new ProductoLN().listarProducto();
+            var result = new ProductoLN().listarProducto("compra");
             return Json(result);
         }
 
-        //[HttpPost]
-        //[Route("listarProductosContar")]
-        //public JsonResult listarProductosCont([FromBody] productoBuscar param)
-        //{
-        //    //var resul = obtenerMenuPorUsuario.fn(null);
-        //    var result = new ProductoLN().listarProductoCont(param);
-        //    return Json(result);
-        //}
+		[HttpGet]
+		[Route("listarProductosVenta")]
+		public JsonResult listarProductosVenta()
+		{
+			//var resul = obtenerMenuPorUsuario.fn(null);
+			var result = new ProductoLN().listarProducto("venta");
+			return Json(result);
+		}
 
-
-        [HttpPost]
+		[HttpPost]
         [Route("listarCategoriasProducto")]
         public JsonResult listarCategoriasProducto()
         {
@@ -61,6 +60,7 @@ namespace APIZ.Controllers
             var result = new ProductoLN().insertarProducto(param);
             return Json(result);
         }
+
         [HttpPost]
         [Route("insertarCompra")]
         public JsonResult insertarCompra([FromBody] producto param)
