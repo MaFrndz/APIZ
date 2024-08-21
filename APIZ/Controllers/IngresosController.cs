@@ -12,10 +12,23 @@ namespace APIZ.Controllers
 		[Route("obtenerIngresos")]
 		public JsonResult obtenerIngresos()
 		{
-			
-			var result = new ProductoLN().ListarUnidadMedida();
+			var result = new IngresosLN().obtenerIngresos();
 			return Json(result);
 		}
 
+		[HttpPost]
+		[Route ("insertar")]
+		public JsonResult insertarIngreso(IngresoFront param)
+		{
+			var result = new IngresosLN().insertarIngreso(param);
+			return Json(result);
+		}
+
+		[HttpDelete]
+		[Route("eliminar/{id}")]
+		public JsonResult eliminar(int id)
+		{
+			return Json( new IngresosLN().eliminar(id) );
+		}
 	}
 }

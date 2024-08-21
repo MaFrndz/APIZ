@@ -1,5 +1,4 @@
 ﻿using System;
-using APIZ.Datos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -23,7 +22,7 @@ namespace Datos.Modelo
         public virtual DbSet<Egreso> Egreso { get; set; }
         public virtual DbSet<EntidadEgreso> EntidadEgreso { get; set; }
         public virtual DbSet<EvidenciaEgreso> EvidenciaEgreso { get; set; }
-        public virtual DbSet<Ingresos> Ingresos { get; set; }
+        public virtual DbSet<Ingreso> Ingreso { get; set; }
         public virtual DbSet<Menu> Menu { get; set; }
         public virtual DbSet<MenuPerfil> MenuPerfil { get; set; }
         public virtual DbSet<Moneda> Moneda { get; set; }
@@ -38,9 +37,9 @@ namespace Datos.Modelo
         {
             if (!optionsBuilder.IsConfigured)
             {
-
-				optionsBuilder.UseSqlServer(new conexion().getConexionString());
-			}
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer("Data Source=MIGUELPC\\SQLEXPRESS; Initial Catalog=SitemaZ; User ID=sa;Password=.");
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -205,11 +204,33 @@ namespace Datos.Modelo
                     .HasConstraintName("FK_EvidenciaEgreso_Egreso");
             });
 
-            modelBuilder.Entity<Ingresos>(entity =>
+            modelBuilder.Entity<Ingreso>(entity =>
             {
-                entity.HasKey(e => e.IdIngresos);
+                entity.HasKey(e => e.IdIngreso)
+                    .HasName("PK_Ingresos");
 
-                entity.Property(e => e.IdIngresos).HasColumnName("idIngresos");
+                entity.Property(e => e.IdIngreso).HasColumnName("idIngreso");
+
+                entity.Property(e => e.Descripcion)
+                    .HasMaxLength(250)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Fecha)
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.IdProducto).HasColumnName("idProducto");
+
+                entity.Property(e => e.IdUsuario).HasColumnName("idUsuario");
+
+                entity.Property(e => e.Monto).HasColumnType("decimal(10, 2)");
+
+                entity.Property(e => e.ProcioUnidad).HasColumnType("decimal(10, 2)");
+
+                entity.HasOne(d => d.IdProductoNavigation)
+                    .WithMany(p => p.Ingreso)
+                    .HasForeignKey(d => d.IdProducto)
+                    .HasConstraintName("FK_Ingreso_Producto");
             });
 
             modelBuilder.Entity<Menu>(entity =>
