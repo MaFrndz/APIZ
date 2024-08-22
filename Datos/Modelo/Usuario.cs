@@ -14,6 +14,7 @@ namespace Datos.Modelo
         public string ApPaterno { get; set; }
         public string ApMaterno { get; set; }
         public string Correo { get; set; }
+        public bool? Borrado { get; set; }
 
         public virtual Perfil IdPerfilNavigation { get; set; }
         public virtual Sede IdSedeNavigation { get; set; }

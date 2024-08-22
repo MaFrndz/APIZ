@@ -13,6 +13,7 @@ namespace LNegocio
 		public List<usuaio> listaUsuarios()
 		{
 			var result = (from x in bd.Usuario
+						  where x.Borrado != true
 						  select (new usuaio
 						  {
 							  idUsuario = x.IdUsuario,
@@ -151,6 +152,18 @@ namespace LNegocio
 		public bool eliminarUsuario(int idUsuario) { 
 		
 			var result = false;
+			try
+			{
+				var usuario = (from x in bd.Usuario 
+							   where x.IdUsuario == idUsuario 
+							   select x).SingleOrDefault(); 
+				if (usuario != null) {
+					usuario.Borrado = true;
+				}
+				bd.SaveChanges();
+				result = true;
+
+			}catch (Exception e) { throw e; }
 
 
 			return result;

@@ -1,4 +1,5 @@
 ﻿using System;
+using APIZ.Datos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -37,9 +38,8 @@ namespace Datos.Modelo
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("Data Source=MIGUELPC\\SQLEXPRESS; Initial Catalog=SitemaZ; User ID=sa;Password=.");
-            }
+				optionsBuilder.UseSqlServer(new conexion().getConexionString());
+			}
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

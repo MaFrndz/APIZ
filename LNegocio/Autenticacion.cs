@@ -20,7 +20,9 @@ namespace LNegocio
             
 
             var us = (from x in bd.Usuario
-                          where (x.UsuarioSistema == param.usuarioSistema && x.Contrasenia == param.contrasenia)
+                          where (x.UsuarioSistema == param.usuarioSistema 
+                          && x.Contrasenia == param.contrasenia
+                          && x.Borrado != true)
                           select ( new autenticacionRes {apMaterno = x.ApMaterno,
                                                         apPaterno = x.ApPaterno,
                                                         autorizado = true,
