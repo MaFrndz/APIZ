@@ -147,6 +147,14 @@ namespace LNegocio
 			return result;
 		}
 
+
+		public bool eliminarUsuario(int idUsuario) { 
+		
+			var result = false;
+
+
+			return result;
+		}
 	}
 
 	public class MenuPerfil

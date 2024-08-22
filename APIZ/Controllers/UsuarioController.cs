@@ -55,7 +55,15 @@ namespace APIZ.Controllers
             return Json(result);    
 		}
 
-        [HttpPost]
+		[HttpDelete]
+		[Route("eliminar/{idUsuario}")]
+		public JsonResult eliminar(int idUsuario)
+		{
+			var result = obj.eliminarUsuario(idUsuario);
+			return Json(result);
+		}
+
+		[HttpPost]
         [Route("actualizarMenuPerfil")]
         public JsonResult actualizarMenuPerfil([FromBody] List<LNegocio.MenuPerfil> menu)
         {
