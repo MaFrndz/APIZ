@@ -50,6 +50,23 @@ namespace APIZ.Controllers
 			ProduccionLN obj = new ProduccionLN();
             return Json(obj.insertarDetalleConsumo(param));
         }
+
+        [HttpPatch]
+        [Route("actualizarDetalleConsumo/{id}")]
+        public JsonResult actualizarDetalleConsumo([FromRoute] int id, [FromBody] detalleConsumo detalleConsumo)
+        {
+            ProduccionLN obj = new ProduccionLN();
+            return Json(obj.actualizarDetalleConsumo(id, detalleConsumo));
+        }
+
+        [HttpGet]
+        [Route("obtenerDetalleConsumoConDevolucion")]
+        public JsonResult obtenerDetalleConsumoConDevolucion()
+        {
+            ProduccionLN obj = new ProduccionLN();
+            return Json(obj.obtenerDetalleConsumoConDevolucion());
+        }
+
         #endregion
     }
 }

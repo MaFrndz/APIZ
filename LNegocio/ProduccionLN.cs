@@ -87,10 +87,13 @@ namespace LNegocio
 						  orderby x.IdDetalleConsumo descending
 						  select (new detalleConsumo
 						  {
+							  idDetalleConsumo = x.IdDetalleConsumo,
 							  cantidad = x.Cantidad.Value,
 							  producto = x.IdProductoNavigation.Nombre,
 							  idProducto = x.IdProducto.Value,
 							  idConsumo = x.IdConsumo.Value,
+							  devolucion = x.Devolucion.Value,
+							  idUsuarioConforme = x.IdUsuarioConforme.Value
 						  })).ToList();
 
 			//foreach (var item in result)
@@ -102,7 +105,27 @@ namespace LNegocio
 			return result;
 		}
 
-		public bool insertarDetalleConsumo(detalleConsumo param)
+        public List<detalleConsumo> obtenerDetalleConsumoConDevolucion()
+        {
+            var result = (from x in bd.DetalleConsumo
+						  where x.Devolucion > 0
+                          orderby x.IdDetalleConsumo descending
+                          select (new detalleConsumo
+                          {
+                              idDetalleConsumo = x.IdDetalleConsumo,
+                              cantidad = x.Cantidad.Value,
+                              producto = x.IdProductoNavigation.Nombre,
+                              idProducto = x.IdProducto.Value,
+                              idConsumo = x.IdConsumo.Value,
+                              devolucion = x.Devolucion.Value,
+                              fechaConsumo = (from y in bd.Consumo where y.IdConsumo == x.IdConsumo 
+											  select y.Fecha.Value.ToString("dd/MM/yyyy")).FirstOrDefault(),
+							  idUsuarioConforme = x.IdUsuarioConforme.Value
+                          })).ToList();
+            return result;
+        }
+
+        public bool insertarDetalleConsumo(detalleConsumo param)
 		{
 			bool result = false;
 
@@ -127,7 +150,33 @@ namespace LNegocio
 
 			return result;
 		}
-		#endregion
-	}
+
+        public bool actualizarDetalleConsumo(int idDetalleConsumo, detalleConsumo detalleConsumo)
+        {
+            // Buscar el registro por llave primaria, validar y actualizar
+            var item = bd.DetalleConsumo.Find(idDetalleConsumo);
+            if (item == null) return false;
+            item.Devolucion = detalleConsumo.devolucion;
+
+			// dar conforme a una devolucion
+			if(detalleConsumo.idUsuarioConforme != 0)
+			{
+				//actualizar la tabla detalle
+				item.IdUsuarioConforme = detalleConsumo.idUsuarioConforme;
+
+                //actualizar stock
+                var producto = bd.Producto.Find(detalleConsumo.idProducto);
+                if (producto != null)
+                {
+                    // usar detalleConsumo.devolucion o detalleConsumo.cantidad según corresponda
+                    producto.Stock = (producto.Stock ?? 0) + detalleConsumo.devolucion;
+                    if (producto.Stock < 0) producto.Stock = 0; // opcional
+                }
+            }
+            bd.SaveChanges();
+            return true;
+        }
+        #endregion
+    }
 
 }

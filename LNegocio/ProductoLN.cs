@@ -276,11 +276,15 @@ namespace LNegocio
 	//produccion
 	public class detalleConsumo
 	{
+		public int idDetalleConsumo { get; set; }
 		public int idProducto { get; set; }
 		public int idConsumo { get; set; }
 		public int cantidad { get; set; }
+        public int devolucion { get; set; }
+        public string producto { get; set; }
+		public string fechaConsumo { get; set; }
 
-		public string producto { get; set; }
+		public int idUsuarioConforme { get; set; }
 		//public string costoTotal { get; set; }
 	}
 

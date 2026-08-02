@@ -9,6 +9,8 @@ namespace Datos.Modelo
         public int? IdConsumo { get; set; }
         public int? IdProducto { get; set; }
         public int? Cantidad { get; set; }
+        public int? Devolucion { get; set; }
+        public int? IdUsuarioConforme { get; set; }
 
         public virtual Consumo IdConsumoNavigation { get; set; }
         public virtual Producto IdProductoNavigation { get; set; }
