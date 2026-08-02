@@ -1,7 +1,7 @@
-﻿using System;
-using APIZ.Datos;
+﻿using APIZ.Datos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using System;
 
 namespace Datos.Modelo
 {
@@ -16,6 +16,7 @@ namespace Datos.Modelo
         {
         }
 
+        public virtual DbSet<AsistenciaPlanilla> AsistenciaPlanilla { get; set; }
         public virtual DbSet<CategoriaProducto> CategoriaProducto { get; set; }
         public virtual DbSet<CompraProducto> CompraProducto { get; set; }
         public virtual DbSet<Consumo> Consumo { get; set; }
@@ -29,6 +30,7 @@ namespace Datos.Modelo
         public virtual DbSet<Moneda> Moneda { get; set; }
         public virtual DbSet<Pedido> Pedido { get; set; }
         public virtual DbSet<Perfil> Perfil { get; set; }
+        public virtual DbSet<Planilla> Planilla { get; set; }
         public virtual DbSet<Producto> Producto { get; set; }
         public virtual DbSet<Sede> Sede { get; set; }
         public virtual DbSet<UnidadMedida> UnidadMedida { get; set; }
@@ -38,12 +40,36 @@ namespace Datos.Modelo
         {
             if (!optionsBuilder.IsConfigured)
             {
-				optionsBuilder.UseSqlServer(new conexion().getConexionString());
-			}
+                optionsBuilder.UseSqlServer(new conexion().getConexionString());
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<AsistenciaPlanilla>(entity =>
+            {
+                entity.HasKey(e => e.IdAsistenciaPlanilla);
+
+                entity.Property(e => e.IdAsistenciaPlanilla).HasColumnName("idAsistenciaPlanilla");
+
+                entity.Property(e => e.Asistencia)
+                    .HasColumnName("asistencia")
+                    .HasColumnType("decimal(1, 1)");
+
+                entity.Property(e => e.Borrado).HasColumnName("borrado");
+
+                entity.Property(e => e.Fecha)
+                    .HasColumnName("fecha")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.IdPlanilla).HasColumnName("idPlanilla");
+
+                entity.HasOne(d => d.IdPlanillaNavigation)
+                    .WithMany(p => p.AsistenciaPlanilla)
+                    .HasForeignKey(d => d.IdPlanilla)
+                    .HasConstraintName("FK_AsistenciaPlanilla_Planilla");
+            });
+
             modelBuilder.Entity<CategoriaProducto>(entity =>
             {
                 entity.HasKey(e => e.IdCategoriaProducto);
@@ -116,9 +142,13 @@ namespace Datos.Modelo
 
                 entity.Property(e => e.IdDetalleConsumo).HasColumnName("idDetalleConsumo");
 
+                entity.Property(e => e.Devolucion).HasColumnName("devolucion");
+
                 entity.Property(e => e.IdConsumo).HasColumnName("idConsumo");
 
                 entity.Property(e => e.IdProducto).HasColumnName("idProducto");
+
+                entity.Property(e => e.IdUsuarioConforme).HasColumnName("idUsuarioConforme");
 
                 entity.HasOne(d => d.IdConsumoNavigation)
                     .WithMany(p => p.DetalleConsumo)
@@ -318,6 +348,48 @@ namespace Datos.Modelo
                     .IsUnicode(false);
 
                 entity.Property(e => e.SesionUnica).HasDefaultValueSql("((0))");
+            });
+
+            modelBuilder.Entity<Planilla>(entity =>
+            {
+                entity.HasKey(e => e.IdPlanilla);
+
+                entity.Property(e => e.IdPlanilla).HasColumnName("idPlanilla");
+
+                entity.Property(e => e.Apellidos)
+                    .HasColumnName("apellidos")
+                    .HasMaxLength(200)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Borrado).HasColumnName("borrado");
+
+                entity.Property(e => e.Cargo)
+                    .HasColumnName("cargo")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Celularcuenta)
+                    .HasColumnName("celularcuenta")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.DiasTrabajados)
+                    .HasColumnName("diasTrabajados")
+                    .HasColumnType("decimal(4, 2)");
+
+                entity.Property(e => e.Dni)
+                    .HasColumnName("dni")
+                    .HasMaxLength(8)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Nombres)
+                    .HasColumnName("nombres")
+                    .HasMaxLength(200)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.TarifaDia)
+                    .HasColumnName("tarifaDia")
+                    .HasColumnType("decimal(8, 2)");
             });
 
             modelBuilder.Entity<Producto>(entity =>
