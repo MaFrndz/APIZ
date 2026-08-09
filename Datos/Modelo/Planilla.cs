@@ -11,6 +11,7 @@ namespace Datos.Modelo
         }
 
         public int IdPlanilla { get; set; }
+        public int? IdGrupoPlanilla { get; set; }
         public string Nombres { get; set; }
         public string Apellidos { get; set; }
         public string Cargo { get; set; }
@@ -20,6 +21,7 @@ namespace Datos.Modelo
         public decimal? TarifaDia { get; set; }
         public bool? Borrado { get; set; }
 
+        public virtual GrupoPlanilla IdGrupoPlanillaNavigation { get; set; }
         public virtual ICollection<AsistenciaPlanilla> AsistenciaPlanilla { get; set; }
     }
 }

@@ -13,5 +13,9 @@ namespace LNegocio.DTO
         public decimal DiasTrabajados { get; set; }
         public decimal TarifaDia { get; set; }
         public bool Borrado { get; set; }
+
+        public GrupoPlanillaDto grupoPlanilla { get; set; }
     }
+
+    
 }

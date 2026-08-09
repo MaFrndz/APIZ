@@ -24,6 +24,7 @@ namespace Datos.Modelo
         public virtual DbSet<Egreso> Egreso { get; set; }
         public virtual DbSet<EntidadEgreso> EntidadEgreso { get; set; }
         public virtual DbSet<EvidenciaEgreso> EvidenciaEgreso { get; set; }
+        public virtual DbSet<GrupoPlanilla> GrupoPlanilla { get; set; }
         public virtual DbSet<Ingreso> Ingreso { get; set; }
         public virtual DbSet<Menu> Menu { get; set; }
         public virtual DbSet<MenuPerfil> MenuPerfil { get; set; }
@@ -234,6 +235,18 @@ namespace Datos.Modelo
                     .HasConstraintName("FK_EvidenciaEgreso_Egreso");
             });
 
+            modelBuilder.Entity<GrupoPlanilla>(entity =>
+            {
+                entity.HasKey(e => e.IdGrupoPlanilla);
+
+                entity.Property(e => e.IdGrupoPlanilla).HasColumnName("idGrupoPlanilla");
+
+                entity.Property(e => e.Nombre)
+                    .HasColumnName("nombre")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
+
             modelBuilder.Entity<Ingreso>(entity =>
             {
                 entity.HasKey(e => e.IdIngreso)
@@ -382,6 +395,8 @@ namespace Datos.Modelo
                     .HasMaxLength(8)
                     .IsUnicode(false);
 
+                entity.Property(e => e.IdGrupoPlanilla).HasColumnName("idGrupoPlanilla");
+
                 entity.Property(e => e.Nombres)
                     .HasColumnName("nombres")
                     .HasMaxLength(200)
@@ -390,6 +405,11 @@ namespace Datos.Modelo
                 entity.Property(e => e.TarifaDia)
                     .HasColumnName("tarifaDia")
                     .HasColumnType("decimal(8, 2)");
+
+                entity.HasOne(d => d.IdGrupoPlanillaNavigation)
+                    .WithMany(p => p.Planilla)
+                    .HasForeignKey(d => d.IdGrupoPlanilla)
+                    .HasConstraintName("FK_Planilla_GrupoPlanilla");
             });
 
             modelBuilder.Entity<Producto>(entity =>

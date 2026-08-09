@@ -2,7 +2,7 @@
 using LNegocio.DTO;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace LNegocio
 {
@@ -11,15 +11,182 @@ namespace LNegocio
         SitemaZContext bd = new SitemaZContext();
         public List<PlanillaDto> obtenerPlanilla()
         {
-            //var result = (from x in bd.pk
-            //              select (new PlanillaResult
-            //              {
-            //                  IdPlanilla = x.IdPlanilla,
-            //                  Nombre = x.Nombre,
-            //                  Fecha = x.Fecha.Value
-            //              })).ToList();
-            //return result;
-            return null;
+            var result = (from x in bd.Planilla
+                          where x.Borrado == false
+                          select (new PlanillaDto
+                          {
+                              IdPlanilla = x.IdPlanilla,
+                              Nombres = x.Nombres,
+                              Apellidos = x.Apellidos,
+                              Cargo = x.Cargo,
+                              Dni = x.Dni,
+                              CelularCuenta = x.Celularcuenta,
+                              DiasTrabajados = x.DiasTrabajados.Value,
+                              TarifaDia = x.TarifaDia.Value,
+                              grupoPlanilla = new GrupoPlanillaDto(x.IdGrupoPlanillaNavigation.IdGrupoPlanilla, x.IdGrupoPlanillaNavigation.Nombre)
+                          })).ToList();
+            return result;
+        }
+
+        public int insertarPlanilla(PlanillaDto param)
+        {
+            try
+            {
+                Planilla nueva = new Planilla
+                {
+                    Nombres = param.Nombres,
+                    Apellidos = param.Apellidos,
+                    Cargo = param.Cargo,
+                    Dni = param.Dni,
+                    Celularcuenta = param.CelularCuenta,
+                    DiasTrabajados = param.DiasTrabajados,
+                    TarifaDia = param.TarifaDia,
+                    Borrado = false
+                };
+                bd.Planilla.Add(nueva);
+                bd.SaveChanges();
+                return nueva.IdPlanilla;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public bool actualizarPlanilla(int idPlanilla, PlanillaDto param)
+        {
+            try
+            {
+                var planilla = bd.Planilla.Find(idPlanilla);
+                if (planilla == null) return false;
+
+                planilla.Nombres = param.Nombres;
+                planilla.Apellidos = param.Apellidos;
+                planilla.Cargo = param.Cargo;
+                planilla.Dni = param.Dni;
+                planilla.Celularcuenta = param.CelularCuenta;
+                planilla.DiasTrabajados = param.DiasTrabajados;
+                planilla.TarifaDia = param.TarifaDia;
+                planilla.IdGrupoPlanilla = param.grupoPlanilla.idGrupoPlanilla;
+
+                bd.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public List<GrupoPlanillaDto> obtenerGrupoPlanilla()
+        {
+            var result = (from x in bd.GrupoPlanilla
+                          select (new GrupoPlanillaDto
+                          {
+                              idGrupoPlanilla = x.IdGrupoPlanilla,
+                              nombre = x.Nombre
+                          })).ToList();
+            return result;
+        }
+
+        public bool eliminarPlanilla(int idPlanilla)
+        {
+            try
+            {
+                var planilla = bd.Planilla.Find(idPlanilla);
+                if (planilla == null) return false;
+
+                planilla.Borrado = true;
+                bd.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public bool guardarAsistencias(List<AsistenciaPlanillaDto> asistencias)
+        {
+            try
+            {
+                foreach (var asistencia in asistencias)
+                {
+                    // Verificar si existe un registro con el mismo IdPlanilla y Fecha
+                    var registroExistente = bd.AsistenciaPlanilla.FirstOrDefault(x =>
+                        x.IdPlanilla == asistencia.IdPlanilla &&
+                        x.Fecha == asistencia.Fecha &&
+                        x.Borrado == false);
+
+                    if (registroExistente != null)
+                    {
+                        // Actualizar el registro existente
+                        registroExistente.Asistencia = asistencia.Asistencia;
+                    }
+                    else
+                    {
+                        // Crear un nuevo registro
+                        AsistenciaPlanilla nueva = new AsistenciaPlanilla
+                        {
+                            IdPlanilla = asistencia.IdPlanilla,
+                            Fecha = asistencia.Fecha,
+                            Asistencia = asistencia.Asistencia,
+                            Borrado = false
+                        };
+                        bd.AsistenciaPlanilla.Add(nueva);
+                    }
+                }
+                bd.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public List<AsistenciaPlanillaDto> obtenerAsistenciasPorFecha(DateTime fecha)
+        {
+            try
+            {
+                var result = (from x in bd.AsistenciaPlanilla
+                              where x.Fecha == fecha && x.Borrado == false
+                              select (new AsistenciaPlanillaDto
+                              {
+                                  IdAsistenciaPlanilla = x.IdAsistenciaPlanilla,
+                                  IdPlanilla = x.IdPlanilla,
+                                  Fecha = x.Fecha,
+                                  Asistencia = x.Asistencia,
+                                  Borrado = x.Borrado
+                              })).ToList();
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public List<AsistenciaPlanillaDto> obtenerAsistenciasPorIdPlanilla(int idPlanilla)
+        {
+            try
+            {
+                var result = (from x in bd.AsistenciaPlanilla
+                              where x.IdPlanilla == idPlanilla && x.Borrado == false
+                              select (new AsistenciaPlanillaDto
+                              {
+                                  IdAsistenciaPlanilla = x.IdAsistenciaPlanilla,
+                                  IdPlanilla = x.IdPlanilla,
+                                  Fecha = x.Fecha,
+                                  Asistencia = x.Asistencia,
+                                  Borrado = x.Borrado
+                              })).ToList();
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
     }
 }
