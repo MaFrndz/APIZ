@@ -11,6 +11,8 @@ namespace LNegocio.DTO
         public string Dni { get; set; }
         public string CelularCuenta { get; set; }
         public decimal DiasTrabajados { get; set; }
+
+        public decimal MontoPago { get; set; }
         public decimal TarifaDia { get; set; }
         public bool Borrado { get; set; }
 

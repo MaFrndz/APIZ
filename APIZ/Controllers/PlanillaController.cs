@@ -10,11 +10,10 @@ namespace APIZ.Controllers
     [ApiController]
     public class PlanillaController : Controller
     {
-        [HttpGet]
-        [Route("obtenerPlanilla")]
-        public JsonResult obtenerPlanilla()
+        [HttpGet("obtenerPlanilla/{periodo?}")]
+        public JsonResult obtenerPlanilla([FromRoute] string periodo)
         {
-            var result = new PlanillaLN().obtenerPlanilla();
+            var result = new PlanillaLN().obtenerPlanilla(periodo);
             return Json(result);
         }
 

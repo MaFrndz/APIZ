@@ -9,9 +9,44 @@ namespace LNegocio
     public class PlanillaLN
     {
         SitemaZContext bd = new SitemaZContext();
-        public List<PlanillaDto> obtenerPlanilla()
+        public List<PlanillaDto> obtenerPlanilla(string periodo)
         {
-            var result = (from x in bd.Planilla
+            int month = 0, year = 0;
+            bool filterByPeriod = false;
+            if (!string.IsNullOrEmpty(periodo))
+            {
+                var parts = periodo.Split(new[] { '-', '/' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length == 2 && int.TryParse(parts[0], out month) && int.TryParse(parts[1], out year))
+                {
+                    filterByPeriod = true;
+                }
+            }
+
+            if (filterByPeriod)
+            {
+                var result = (from x in bd.Planilla
+                              where x.Borrado == false
+                              select (new PlanillaDto
+                              {
+                                  IdPlanilla = x.IdPlanilla,
+                                  Nombres = x.Nombres,
+                                  Apellidos = x.Apellidos,
+                                  Cargo = x.Cargo,
+                                  Dni = x.Dni,
+                                  CelularCuenta = x.Celularcuenta,
+                                  DiasTrabajados = (bd.AsistenciaPlanilla
+                                      .Where(a => a.IdPlanilla == x.IdPlanilla && a.Borrado == false && a.Fecha.HasValue && a.Fecha.Value.Month == month && a.Fecha.Value.Year == year)
+                                      .Sum(a => (decimal?)a.Asistencia) ?? 0m),
+                                  TarifaDia = x.TarifaDia ?? 0m,
+                                  MontoPago = ((bd.AsistenciaPlanilla
+                                      .Where(a => a.IdPlanilla == x.IdPlanilla && a.Borrado == false && a.Fecha.HasValue && a.Fecha.Value.Month == month && a.Fecha.Value.Year == year)
+                                      .Sum(a => (decimal?)a.Asistencia) ?? 0m) * (x.TarifaDia ?? 0m)),
+                                  grupoPlanilla = x.IdGrupoPlanillaNavigation != null ? new GrupoPlanillaDto(x.IdGrupoPlanillaNavigation.IdGrupoPlanilla, x.IdGrupoPlanillaNavigation.Nombre) : null
+                              })).ToList();
+                return result;
+            }
+
+            var resultNoFilter = (from x in bd.Planilla
                           where x.Borrado == false
                           select (new PlanillaDto
                           {
@@ -21,11 +56,16 @@ namespace LNegocio
                               Cargo = x.Cargo,
                               Dni = x.Dni,
                               CelularCuenta = x.Celularcuenta,
-                              DiasTrabajados = x.DiasTrabajados.Value,
-                              TarifaDia = x.TarifaDia.Value,
-                              grupoPlanilla = new GrupoPlanillaDto(x.IdGrupoPlanillaNavigation.IdGrupoPlanilla, x.IdGrupoPlanillaNavigation.Nombre)
+                              DiasTrabajados = (bd.AsistenciaPlanilla
+                                  .Where(a => a.IdPlanilla == x.IdPlanilla && a.Borrado == false)
+                                  .Sum(a => (decimal?)a.Asistencia) ?? 0m),
+                              TarifaDia = x.TarifaDia ?? 0m,
+                              MontoPago = ((bd.AsistenciaPlanilla
+                                  .Where(a => a.IdPlanilla == x.IdPlanilla && a.Borrado == false)
+                                  .Sum(a => (decimal?)a.Asistencia) ?? 0m) * (x.TarifaDia ?? 0m)),
+                              grupoPlanilla = x.IdGrupoPlanillaNavigation != null ? new GrupoPlanillaDto(x.IdGrupoPlanillaNavigation.IdGrupoPlanilla, x.IdGrupoPlanillaNavigation.Nombre) : null
                           })).ToList();
-            return result;
+            return resultNoFilter;
         }
 
         public int insertarPlanilla(PlanillaDto param)
